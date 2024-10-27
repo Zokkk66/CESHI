@@ -1,1 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF - 8">
+    <meta name="viewport" content="width=device - width, initial - scale=1.0">
+    <title>逆天佐罗斯</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- 搜索框 -->
+    <div class="search - container">
+        <input type="text" id="searchInput" placeholder="搜索...">
+        <button type="submit" id="searchButton">搜索</button>
+        <span id="searchFeedback"></span>
+    </div>
+    <!-- 文章容器部分 -->
+    <div class="article - container">
+        <!-- 文章头部区域 -->
+        <header>
+            <h1 id="color - changing - title">标题不小心被吃掉了</h1>
+            <p class="author - date">
+                <span class="author">作者：[佐罗斯]</span>
+                <span class="date">发布日期：[无]</span>
+            </p>
+        </header>
+        <!-- 正文区域 -->
+        <section class="content">
+            <div class="video - container">
+                <video controls>
+                    <source src="example - video.mp4" type="video/mp4">
+                    您的浏览器不支持视频标签，请更换浏览器查看。
+                </video>
+            </div>
+            <h2>一级标题</h2>
+            <p>正文段落内容，段落之间有一定的行间距。这是为了提供更好的阅读体验，文字字体为微软雅黑，大小为16px左右。</p>
+            <h3>二级标题</h3>
+            <p>另一段正文内容。</p>
+            <!-- 商店功能 -->
+            <div class="store">
+                <div class="product">
+                    <img src="product - image.jpg" alt="商品图片">
+                    <h4>商品名称</h4>
+                    <p>价格: ¥99.99</p>
+                    <button class="buy - button">查看更多</button>
+                </div>
+                <!-- 可以添加更多商品 -->
+            </div>
+            <!-- 音频播放器 -->
+            <audio controls src="example - audio.mp3">
+                您的浏览器不支持音频标签，请更换浏览器查看。
+            </audio>
+        </section>
+        <!-- 底部区域 -->
+        <footer>
+            <p class="copyright">版权信息：版权所有 &copy; [版权所有者]。</p>
+        </footer>
+        <!-- 交互元素 -->
+        <div class="interaction - buttons">
+            <div class="share - buttons">
+                <img src="wechat - share - icon.png" alt="微信分享图标">
+                <img src="moment - share - icon.png" alt="朋友圈分享图标">
+            </div>
+            <div class="like - watch - button">
+                <img src="like - icon.png" alt="点赞图标">
+                <img src="watch - icon.png" alt="在看图标">
+            </div>
+            <div class="comment - button">
+                <img src="comment - icon.png" alt="评论图标">
+            </div>
+        </div>
+    </div>
+    <!-- 模态窗口 -->
+    <div id="modal" class="modal">
+        <div class="modal - content">
+            <span class="close - button">&times;</span>
+            <div class="carousel">
+                <!-- 原有的轮播图内容 -->
+                <div class="carousel - item">
+                    <img data - src="modal_images/product - image1.jpg" alt="商品图片1">
+                    <p>昙花若只一现 更要开的耀眼。</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/product - image2.jpg" alt="商品图片2">
+                    <p>昙花若只一现 更要开的耀眼</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/product - image3.jpg" alt="商品图片3">
+                    <p>昙花若只一现 更要开的耀眼</p>
+                </div>
+                <!-- 新增的10张轮播图 -->
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image1.jpg" alt="新商品图片1">
+                    <p>新的轮播图内容1</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image2.jpg" alt="新商品图片2">
+                    <p>新的轮播图内容2</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image3.jpg" alt="新商品图片3">
+                    <p>新的轮播图内容3</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image4.jpg" alt="新商品图片4">
+                    <p>新的轮播图内容4</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image5.jpg" alt="新商品图片5">
+                    <p>新的轮播图内容5</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image6.jpg" alt="新商品图片6">
+                    <p>新的轮播图内容6</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image7.jpg" alt="新商品图片7">
+                    <p>新的轮播图内容7</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image8.jpg" alt="新商品图片8">
+                    <p>新的轮播图内容8</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image9.jpg" alt="新商品图片9">
+                    <p>新的轮播图内容9</p>
+                </div>
+                <div class="carousel - item">
+                    <img data - src="modal_images/new - product - image10.jpg" alt="新商品图片10">
+                    <p>新的轮播图内容10</p>
+                </div>
+                <!-- 轮播图导航按钮 -->
+                <button class="carousel - button prev">&lt;</button>
+                <button class="carousel - button next">&gt;</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+  </html>
