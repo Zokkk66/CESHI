@@ -1,29 +1,174 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>整合后的网页</title>
-    <!-- 引入外部CSS文件 -->
-    <link rel="stylesheet" href="styles.css">
+    <title>贪吃蛇游戏</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #gameArea {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border: 2px solid #000;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        .snake, .food {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+        }
+        .snake {
+            background-color: #000;
+        }
+        .food {
+            background-color: #f00;
+        }
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 300px;
+        }
+        #controls button {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            font-size: 24px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+        }
+        #controls button:active {
+            background-color: #555;
+        }
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            #gameArea {
+                width: 90vw;
+                height: 90vw;
+            }
+            #controls {
+                width: 90vw;
+            }
+            #controls button {
+                width: 20vw;
+                height: 20vw;
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav>
-        <a href="#">首页</a>
-        <a href="#">关于</a>
-        <a href="#">联系我们</a>
-        <a href="#">更多</a>
-        <a href="https://hailuoai.com/">海洛AI</a>
-    </nav>
-    <!-- 其他内容 -->
-    <main>
-        <!-- 你的其他内容 -->
-    </main>
-    <!-- JavaScript部分 -->
+    <div id="gameArea"></div>
+    <div id="controls">
+        <button id="up">↑</button>
+        <button id="left">←</button>
+        <button id="down">↓</button>
+        <button id="right">→</button>
+    </div>
     <script>
-        // 你的JavaScript代码
+        // JavaScript代码保持不变
+        const gameArea = document.getElementById('gameArea');
+        const upButton = document.getElementById('up');
+        const downButton = document.getElementById('down');
+        const leftButton = document.getElementById('left');
+        const rightButton = document.getElementById('right');
+
+        let snake = [{x: 5, y: 5}];
+        let food = {x: 10, y: 10};
+        let direction = 'right';
+        let gameInterval;
+
+        function createSnakeSegment(x, y) {
+            const segment = document.createElement('div');
+            segment.classList.add('snake');
+            segment.style.left = `${x * 10}px`;
+            segment.style.top = `${y * 10}px`;
+            gameArea.appendChild(segment);
+            return segment;
+        }
+
+        function createFood(x, y) {
+            const foodElement = document.createElement('div');
+            foodElement.classList.add('food');
+            foodElement.style.left = `${x * 10}px`;
+            foodElement.style.top = `${y * 10}px`;
+            gameArea.appendChild(foodElement);
+            return foodElement;
+        }
+
+        function updateGame() {
+            const head = {...snake[0]};
+            switch(direction) {
+                case 'up':
+                    head.y--;
+                    break;
+                case 'down':
+                    head.y++;
+                    break;
+                case 'left':
+                    head.x--;
+                    break;
+                case 'right':
+                    head.x++;
+                    break;
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                gameArea.removeChild(gameArea.lastChild);
+                placeFood();
+            } else {
+                const tail = snake.pop();
+                gameArea.removeChild(gameArea.children[snake.length]);
+            }
+
+            if (head.x < 0 || head.x >= 30 || head.y < 0 || head.y >= 30 || collision(head)) {
+                clearInterval(gameInterval);
+                alert('游戏结束');
+                return;
+            }
+
+            createSnakeSegment(head.x, head.y);
+        }
+
+        function placeFood() {
+            food.x = Math.floor(Math.random() * 30);
+            food.y = Math.floor(Math.random() * 30);
+            createFood(food.x, food.y);
+        }
+
+        function collision(head) {
+            return snake.some(segment => segment.x === head.x && segment.y === head.y);
+        }
+
+        function initGame() {
+            gameArea.innerHTML = '';
+            snake = [{x: 5, y: 5}];
+            direction = 'right';
+            placeFood();
+            gameInterval = setInterval(updateGame, 300);
+        }
+
+        initGame();
+
+        upButton.addEventListener('click', () => direction = 'up');
+        downButton.addEventListener('click', () => direction = 'down');
+        leftButton.addEventListener('click', () => direction = 'left');
+        rightButton.addEventListener('click', () => direction = 'right');
     </script>
 </body>
 </html>
