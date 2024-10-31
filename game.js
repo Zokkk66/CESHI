@@ -38,7 +38,7 @@ function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 绘制网格
-    ctx.strokeStyle = '#444';
+    ctx.strokeStyle = '#ddd'; // 网格颜色设置为浅灰色
     for (let i = grid; i < canvas.width; i += grid) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
@@ -138,44 +138,30 @@ document.getElementById('right').addEventListener('click', function() {
     }
 });
 
-// 触摸控制方向
-canvas.addEventListener('touchstart', function(e) {
-    const touchX = e.touches[0].clientX;
-    const touchY = e.touches[0].clientY;
-    const rect = canvas.getBoundingClientRect();
-    const canvasX = touchX - rect.left;
-    const canvasY = touchY - rect.top;
-
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-
-    if (canvasY < centerY) {
-        if (snake.dy === 0) {
-            snake.dy = -grid;
-            snake.dx = 0;
-        }
-    } else if (canvasY > centerY) {
-        if (snake.dy === 0) {
-            snake.dy = grid;
-            snake.dx = 0;
-        }
-    } else if (canvasX < centerX) {
-        if (snake.dx === 0) {
-            snake.dx = -grid;
-            snake.dy = 0;
-        }
-    } else if (canvasX > centerX) {
-        if (snake.dx === 0) {
-            snake.dx = grid;
-            snake.dy = 0;
-        }
-    }
-});
-
 // 开始/暂停游戏
 document.getElementById('startPause').addEventListener('click', function() {
     isPaused = !isPaused;
-    if (!isPaused) {
+    if (isPaused) {
+        this.innerText = '开始';
+    } else {
+        this.innerText = '暂停';
         requestAnimationFrame(loop);
     }
+});
+
+// 重置游戏
+document.getElementById('reset').addEventListener('click', function() {
+    isPaused = true;
+    snake.x = 160;
+    snake.y = 160;
+    snake.cells = [];
+    snake.maxCells = 4;
+    snake.dx = grid;
+    snake.dy = 0;
+    score = 0;
+    document.getElementById('score').innerText = '得分: ' + score;
+    apple.x = getRandomInt(0, 20) * grid;
+    apple.y = getRandomInt(0, 20) * grid;
+    this.innerText = '重置';
+    document.getElementById('startPause').innerText = '开始';
 });
