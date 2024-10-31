@@ -88,16 +88,8 @@ function loop() {
         if (snake.cells[i].x === snake.x && snake.cells[i].y === snake.y) {
             isPaused = true;
             alert('游戏结束! 你的得分: ' + score);
-            snake.x = 160;
-            snake.y = 160;
-            snake.cells = [];
-            snake.maxCells = 4;
-            snake.dx = grid;
-            snake.dy = 0;
-            score = 0;
-            document.getElementById('score').innerText = '得分: ' + score;
-            apple.x = getRandomInt(0, 20) * grid;
-            apple.y = getRandomInt(0, 20) * grid;
+            document.getElementById('startPause').innerText = '开始';
+            break;
         }
     }
 
@@ -164,4 +156,11 @@ document.getElementById('reset').addEventListener('click', function() {
     apple.y = getRandomInt(0, 20) * grid;
     this.innerText = '重置';
     document.getElementById('startPause').innerText = '开始';
+    document.getElementById('backgroundMusic').play();
 });
+
+// 启动游戏循环
+requestAnimationFrame(loop);
+
+// 播放背景音乐
+document.getElementById('backgroundMusic').play();
