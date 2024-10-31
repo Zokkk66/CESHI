@@ -2,6 +2,10 @@ const gameArea = document.getElementById('gameArea');
 const startPauseButton = document.getElementById('startPause');
 const resetButton = document.getElementById('reset');
 const scoreDisplay = document.getElementById('score');
+const upButton = document.getElementById('up');
+const downButton = document.getElementById('down');
+const leftButton = document.getElementById('left');
+const rightButton = document.getElementById('right');
 
 let snake = [{x: 5, y: 5}];
 let food = {x: 10, y: 10};
@@ -109,19 +113,18 @@ resetButton.addEventListener('click', () => {
 });
 
 // 控制方向
-document.addEventListener('keydown', (event) => {
-    switch(event.key) {
-        case 'ArrowUp':
-            if (direction !== 'down') direction = 'up';
-            break;
-        case 'ArrowDown':
-            if (direction !== 'up') direction = 'down';
-            break;
-        case 'ArrowLeft':
-            if (direction !== 'right') direction = 'left';
-            break;
-        case 'ArrowRight':
-            if (direction !== 'left') direction = 'right';
-            break;
-    }
+upButton.addEventListener('click', () => {
+    if (direction !== 'down') direction = 'up';
+});
+
+downButton.addEventListener('click', () => {
+    if (direction !== 'up') direction = 'down';
+});
+
+leftButton.addEventListener('click', () => {
+    if (direction !== 'right') direction = 'left';
+});
+
+rightButton.addEventListener('click', () => {
+    if (direction !== 'left') direction = 'right';
 });
