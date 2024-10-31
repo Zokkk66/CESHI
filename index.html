@@ -17,7 +17,8 @@
         }
         canvas {
             background-color: #111;
-            touch-action: none; /* 防止默认的触摸行为 */
+            border: 2px solid #fff;
+            touch-action: none;
         }
         .controls {
             display: flex;
@@ -29,6 +30,11 @@
             height: 60px;
             font-size: 24px;
             margin: 0 10px;
+        }
+        .score {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 20px;
         }
         @media (max-width: 600px) {
             .controls {
@@ -42,13 +48,17 @@
     </style>
 </head>
 <body>
+    <div class="score" id="score">得分: 0</div>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <div class="controls">
-        <button id="up">↑</button>
+        <button id="startPause">开始/暂停</button>
         <div>
-            <button id="left">←</button>
-            <button id="down">↓</button>
-            <button id="right">→</button>
+            <button id="up">↑</button>
+            <div>
+                <button id="left">←</button>
+                <button id="down">↓</button>
+                <button id="right">→</button>
+            </div>
         </div>
     </div>
     <script src="game.js"></script>
