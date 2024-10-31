@@ -15,6 +15,9 @@ let apple = {
     x: 320,
     y: 320
 };
+let score = 0;
+let gameInterval;
+let isPaused = true;
 
 // 随机生成苹果的位置
 function getRandomInt(min, max) {
@@ -23,14 +26,29 @@ function getRandomInt(min, max) {
 
 // 游戏循环
 function loop() {
+    if (isPaused) return;
+
     requestAnimationFrame(loop);
 
     // 控制游戏速度
-    if (++count < 4) {
+    if (++count < 6) { // 调整这个值来控制速度
         return;
     }
     count = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 绘制网格
+    ctx.strokeStyle = '#444';
+    for (let i = grid; i < canvas.width; i += grid) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+    }
 
     // 移动蛇
     snake.x += snake.dx;
@@ -59,6 +77,8 @@ function loop() {
     // 检查是否吃到苹果
     if (snake.x === apple.x && snake.y === apple.y) {
         snake.maxCells++;
+        score += 10;
+        document.getElementById('score').innerText = '得分: ' + score;
         apple.x = getRandomInt(0, 20) * grid;
         apple.y = getRandomInt(0, 20) * grid;
     }
@@ -66,12 +86,16 @@ function loop() {
     // 检查是否撞到自己
     for (let i = 1; i < snake.cells.length; i++) {
         if (snake.cells[i].x === snake.x && snake.cells[i].y === snake.y) {
+            isPaused = true;
+            alert('游戏结束! 你的得分: ' + score);
             snake.x = 160;
             snake.y = 160;
             snake.cells = [];
             snake.maxCells = 4;
             snake.dx = grid;
             snake.dy = 0;
+            score = 0;
+            document.getElementById('score').innerText = '得分: ' + score;
             apple.x = getRandomInt(0, 20) * grid;
             apple.y = getRandomInt(0, 20) * grid;
         }
@@ -148,5 +172,10 @@ canvas.addEventListener('touchstart', function(e) {
     }
 });
 
-// 启动游戏循环
-requestAnimationFrame(loop);
+// 开始/暂停游戏
+document.getElementById('startPause').addEventListener('click', function() {
+    isPaused = !isPaused;
+    if (!isPaused) {
+        requestAnimationFrame(loop);
+    }
+});
