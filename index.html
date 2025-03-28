@@ -1,78 +1,1431 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>贪吃蛇游戏</title>
+    <meta name="description" content="欢迎来到佐罗斯官网，了解我们的智能客服系统和数据分析平台。">
+    <meta name="keywords" content="人工智能,数字化转型,物联网,智能客服,数据分析">
+    <meta property="og:title" content="佐罗斯官网">
+    <meta property="og:description" content="欢迎来到佐罗斯官网，了解我们的智能客服系统和数据分析平台。">
+    <meta property="og:image" content="Picture/og-image.jpg">
+    <meta property="og:url" content="https://zorrose.neocities.org/">
+    <meta property="og:type" content="website">
+    <meta name="wechat-share:image" content="Picture/og-image.jpg">
+    <meta name="qq-share:image" content="Picture/og-image.jpg">
+    <title>佐罗斯官网</title>
+    <link rel="icon" href="Picture/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="Picture/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="Picture/apple-touch-icon.png">
+ <meta http-equiv="Content-Security-Policy" 
+      content="
+          form-action 'self' https://www.baidu.com;
+          default-src 'self';
+          script-src 'self' 'unsafe-inline';
+          style-src 'self' 'unsafe-inline';
+          img-src 'self' data: https://*.baidu.com;
+          connect-src 'self' 
+              https://api.allorigins.win 
+              https://corsproxy.io 
+              https://api.codetabs.com 
+              http://api.qingyunke.com;
+          font-src 'self' data:;
+          frame-src 'none';
+">
+    <link rel="preload" href="Picture/background.png" as="image">
+    <link rel="preload" href="Picture/background1.png" as="image">
+    <link rel="preload" href="Picture/background2.png" as="image">
+    <link rel="preload" href="Picture/og-image.jpg" as="image">
+    <link rel="preload" href="Picture/favicon.ico" as="image">
+    <link rel="preload" href="Picture/apple-touch-icon.png" as="image">
+
     <style>
-        body {
+        :root {
+            --nav-height: 70px;
+            --background-color: #fafafa;
+            --primary: #6366f1;
+            --secondary: #f8fafc;
+            --accent: #10b981;
+            --text-primary: #1e293b;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #fff;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--background-color);
+            scroll-behavior: smooth;
+            text-rendering: optimizeLegibility;
+        }
+
+        .heart-animation {
+            position: absolute;
+            pointer-events: none;
+            animation: heartFloat 1s ease-out forwards;
+            width: 40px;
+            height: 40px;
+            z-index: 1000;
+            will-change: transform, opacity;
+        }
+
+        @keyframes heartFloat {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.8); opacity: 0; }
+        }
+
+        nav {
+            background: var(--background-color);
+            padding: 20px 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            height: var(--nav-height);
+            z-index: 1002;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            contain: layout;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .logo:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .logo svg {
+            fill: currentColor;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+            background: #f1f5f9;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            width: 30px;
+            height: 21px;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1002;
+        }
+
+        .hamburger .bar {
+            height: 3px;
+            width: 100%;
+            background: #333;
+            transition: all 0.3s;
+            transform-origin: left center;
+        }
+
+        @media (max-width: 768px) {
+            :root { --nav-height: 60px; }
+            .hamburger { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(5px);
+                flex-direction: column;
+                padding: 10px 15px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                max-height: 70vh;
+                overflow-y: auto;
+                z-index: 1001;
+            }
+            .nav-links.active { display: flex; animation: slideDown 0.3s ease-out; }
+            .nav-links a { padding: 12px; margin: 3px 0; font-size: 0.95em; }
+            .nav-links::-webkit-scrollbar { width: 6px; }
+            .nav-links::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hamburger.active .bar:nth-child(1) { transform: rotate(-45deg) translate(-5px, 6px); }
+        .hamburger.active .bar:nth-child(2) { opacity: 0; }
+        .hamburger.active .bar:nth-child(3) { transform: rotate(45deg) translate(-5px, -6px); }
+
+        .banner {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: var(--nav-height);
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding: 0 15px;
+        }
+
+        .banner-content h1 {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            margin-bottom: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            line-height: 1.2;
+            white-space: normal;
+            word-break: break-word;
+            padding: 0 15px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-content { gap: 30px; }
+            .banner-content h1 { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; }
+            .banner-content p { font-size: 1.2rem; }
+            .cta-button { padding: 12px 30px; font-size: 1.2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .banner-content h1 { font-size: clamp(1.8rem, 7vw, 2.5rem); }
+            .banner-content p { font-size: 1rem; }
+        }
+
+        .banner-content p {
+            font-size: 1.2em;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cta-button {
+            margin-top: 15px;
+            padding: 15px 40px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+
+        .cta-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .carousel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            will-change: opacity;
+        }
+
+        .carousel img.active { opacity: 1; }
+
+        .section {
+            padding: 100px 10%;
+            scroll-margin-top: var(--nav-height);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5em;
+            color: #1e293b;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            perspective: 1000px;
+            height: 400px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateZ(0);
+        }
+
+        .product-card:hover .card-inner { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        .card-front {
             justify-content: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
+            border: 2px solid #e0e7ff;
         }
-        canvas {
-            background-color: #fff;
-            border: 2px solid #000;
-            touch-action: none;
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
         }
-        .controls {
+
+        .product-icon {
+            width: 80px;
+            height: 80px;
+            background: #e0e7ff;
+            border-radius: 20px;
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .product-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: #4f46e5;
+        }
+
+        .product-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .product-content {
+            text-align: center;
+        }
+
+        .product-content h4 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .product-content h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: white;
+        }
+
+        .product-content ul {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .product-content li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .product-content li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #a5b4fc;
+        }
+
+        .detail-button {
+            margin: 0 auto;
+            display: block;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4f46e5;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .detail-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .image-slider-section {
+            padding: 80px 10%;
+            background: white;
+        }
+
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .slider-track {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slider-track::-webkit-scrollbar { display: none; }
+
+        .slide {
+            scroll-snap-align: start;
+            flex: 0 0 100%;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            loading: lazy;
+            decoding: async;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
             margin-top: 20px;
         }
-        .controls button {
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            margin: 5px;
-            border: none;
-            background-color: #000;
-            color: #fff;
+
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e2e8f0;
             cursor: pointer;
-            border-radius: 5px;
+            transition: all 0.3s;
         }
-        .controls button:hover {
-            background-color: #333;
+
+        .slider-dot.active {
+            background: #2563eb;
+            transform: scale(1.2);
         }
-        .score {
-            color: #000;
-            margin-bottom: 10px;
-            font-size: 20px;
+
+        @media (max-width: 768px) {
+            .image-slider-section { padding: 60px 5%; }
+            .slide { aspect-ratio: 16/9; }
+            .product-card { height: 350px; }
+            .card-front, .card-back { padding: 25px; }
         }
-        @media (max-width: 600px) {
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            .controls button {
-                margin: 5px 0;
-            }
+
+        .collapsible-section {
+            padding: 40px 0;
+            background: #1e293b;
+            position: relative;
+            z-index: 1;
+        }
+
+        .collapsible-section .section-title {
+            text-align: center;
+            font-size: 2.2em;
+            color: white;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .collapsible-section .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #2563eb;
+            border-radius: 2px;
+        }
+
+        .collapsible-container {
+            width: 110%;
+            max-width: 1400px;
+            margin: 0 -5%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+
+        .collapsible-item {
+            border-bottom: 1px solid #334155;
+            background: rgba(255,255,255,0.03);
+            transition: background 0.3s;
+        }
+
+        .collapsible-item:hover { background: rgba(255,255,255,0.06); }
+
+        .collapsible-header {
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: none;
+        }
+        .collapsible-header h3 {
+            color: #e2e8f0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .collapse-icon {
+            width: 24px;
+            height: 24px;
+            stroke: #94a3b8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .collapsible-item.active {
+            background: rgba(255,255,255,0.08);
+            border-color: #475569;
+        }
+
+        .collapsible-item.active .collapse-icon {
+            transform: rotate(180deg);
+            stroke: #38bdf8;
+        }
+
+        .collapsible-content {
+            height: 0;
+            overflow: hidden;
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 30px 40px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .spec-item {
+            padding: 25px;
+            background: rgba(15,23,42,0.6);
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .service-box {
+            display: grid;
+            gap: 25px;
+            padding: 30px 40px;
+        }
+
+        .service-card {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 25px;
+            background: rgba(15,23,42,0.6);
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(74,222,128,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .service-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #4ade80;
+        }
+
+        .service-card h4 {
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .service-card p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.95em;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 80px 10%;
+            margin-top: 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section h3 {
+            color: #fff;
+            margin-bottom: 25px;
+            font-size: 1.2em;
+        }
+
+        .footer-section p {
+            color: #94a3b8;
+            line-height: 1.8;
+        }
+
+        .footer-section a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #007bff;
+        }
+
+        .footer-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .footer-section img.footer-icon {
+            filter: brightness(0.8);
+            transition: filter 0.3s ease;
+        }
+
+        .footer-section a:hover img.footer-icon {
+            filter: brightness(1);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+        }
+
+        .ai-section {
+            display: none;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .ai-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .chat-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1.5rem 1.5rem 0 0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 0 0 1.5rem 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
+            height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--secondary);
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 75%;
+            margin: 1rem 0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: messageAppear 0.3s ease-out;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: var(--primary);
+            color: white;
+            margin-left: auto;
+            border-radius: 1.5rem 1.5rem 0 1.5rem;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.2);
+        }
+
+        .bot-message {
+            background: white;
+            margin-right: auto;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-radius: 1.5rem 1.5rem 1.5rem 0;
+        }
+
+        .input-area {
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 2rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .ai-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2000;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-4px);
+        }
+
+        @keyframes dotFlashing {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        .dot-flashing {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            animation: dotFlashing 1s infinite linear;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            z-index: 1003;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0 8px;
+            transition: all 0.3s;
+        }
+
+        .close-sidebar:hover {
+            color: #1e293b;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-content a {
+            padding: 14px 20px;
+            border-radius: 8px;
+            color: #1e293b;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-content a:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1002;
+            display: none;
+            backdrop-filter: blur(1px);
+        }
+
+        @media (max-width: 480px) {
+            .sidebar { width: 280px; left: -280px; }
+        }
+
+        .loading {
+            position: absolute;
+            left: 20px;
+            bottom: 100%;
+            color: #64748b;
+            font-size: 0.9em;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .message div > div:last-child {
+            white-space: pre-line;
         }
     </style>
 </head>
 <body>
-    <div class="score" id="score">得分: 0</div>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <div class="controls">
-        <button id="startPause">开始</button>
-        <button id="reset">重置</button>
-        <div>
-            <button id="up">↑</button>
-            <div>
-                <button id="left">←</button>
-                <button id="down">↓</button>
-                <button id="right">→</button>
+    <!-- 侧边栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                佐罗斯
             </div>
+            <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <a href="#home" onclick="handleNavClick(event)">首页</a>
+            <a href="#products" onclick="handleNavClick(event)">产品中心</a>
+            <a href="#about" onclick="handleNavClick(event)">关于我们</a>
+            <a href="#contact" onclick="handleNavClick(event)">联系我们</a>
+            <a href="/documentation">开发文档</a>
+            <a href="/download">下载中心</a>
         </div>
     </div>
-    <audio id="backgroundMusic" src="background.mp3" loop></audio>
-    <script src="game.js"></script>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- 导航 -->
+    <nav>
+        <div class="logo" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            佐罗斯
+        </div>
+
+        <div class="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            <a href="#home" onclick="handleNavClick(event)">首页</a>
+            <a href="#products" onclick="handleNavClick(event)">产品</a>
+            <a href="#about" onclick="handleNavClick(event)">关于我们</a>
+            <a href="#contact" onclick="handleNavClick(event)">联系我们</a>
+        </div>
+    </nav>
+
+    <!-- 首页内容 -->
+    <div class="main-section">
+        <!-- Banner -->
+        <section id="home" class="banner">
+            <div class="carousel">
+                <img src="Picture/background.png" class="active" alt="背景1" loading="eager" decoding="sync">
+                <img src="Picture/background1.png" alt="背景2" loading="lazy" decoding="async">
+                <img src="Picture/background2.png" alt="背景3" loading="lazy" decoding="async">
+            </div>
+            <div class="banner-content">
+                <h1>欢迎来到佐罗斯官网</h1>
+                <p>Welcome to the Zorros website</p>
+                <button class="cta-button" onclick="showAISection()">立即体验新功能</button>
+            </div>
+        </section>
+
+        <!-- 核心优势 -->
+        <section id="products" class="section">
+            <h2 class="section-title">核心优势</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>顶尖团队</h3>
+                    <p>汇聚行业精英，拥有博士学历占比80%的研发团队</p>
+                </div>
+                <div class="feature-card">
+                    <h3>全天候服务</h3>
+                    <p>7×24小时专业客服支持，响应时间＜5分钟</p>
+                </div>
+                <div class="feature-card">
+                    <h3>成功案例</h3>
+                    <p>已为全球1000+企业提供数字化转型解决方案</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图片滑动模块 -->
+        <section class="image-slider-section">
+            <h2 class="section-title">滑动展示</h2>
+            <div class="slider-container">
+                <div class="slider-track" id="sliderTrack">
+                    <div class="slide">
+                        <img src="images/case1.jpg" alt="案例1">
+                    </div>
+                    <div class="slide">
+                        <img src="images/case2.jpg" alt="案例2">
+                    </div>
+                    <div class="slide">
+                        <img src="images/case3.jpg" alt="案例3">
+                    </div>
+                    <div class="slide">
+                        <img src="images/case4.jpg" alt="案例4">
+                    </div>
+                </div>
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+
+        <!-- 产品矩阵 -->
+        <section id="about" class="section" style="background: #f8fafc;">
+            <h2 class="section-title">产品矩阵</h2>
+            <div class="product-grid">
+                <!-- 产品卡片1 -->
+                <div class="product-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="product-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.18 5 4.05 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            </div>
+                            <h3>智能客服系统</h3>
+                            <p class="product-tag">AI驱动｜全渠道支持</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="product-content">
+                                <h4>核心功能</h4>
+                                <ul>
+                                    <li>自然语言处理引擎</li>
+                                    <li>多语言实时翻译</li>
+                                    <li>情感分析系统</li>
+                                </ul>
+                                <button class="detail-button" onclick="window.location.href='https://zokkk66.github.io/mini/'">查看案例</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 产品卡片2 -->
+                <div class="product-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="product-icon">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                            </div>
+                            <h3>数据分析平台</h3>
+                            <p class="product-tag">实时分析｜智能决策</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="product-content">
+                                <h4>核心功能</h4>
+                                <ul>
+                                    <li>实时数据可视化</li>
+                                    <li>预测性分析引擎</li>
+                                    <li>自动化报告生成</li>
+                                </ul>
+                                <button class="detail-button" onclick="window.location.href='https://zokkk66.github.io/Zorrose/'">查看案例</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 产品卡片3 -->
+                <div class="product-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="product-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 14.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><path d="M12 8V4l4 4-4 4v-4H8v-2h8z"/></svg>
+                            </div>
+                            <h3>AIoT解决方案</h3>
+                            <p class="product-tag">万物互联｜智能管理</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="product-content">
+                                <h4>核心功能</h4>
+                                <ul>
+                                    <li>智能设备管理平台</li>
+                                    <li>边缘计算模块</li>
+                                    <li>预测性维护系统</li>
+                                </ul>
+                                <button class="detail-button" onclick="window.location.href='content://media/external/downloads/229258'">查看案例</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer id="contact">
+            <!-- 折叠面板 -->
+            <section class="collapsible-section">
+                <h2 class="section-title" style="color: white; margin-bottom: 40px;">产品与服务说明</h2>
+                <div class="collapsible-container">
+                    <!-- 折叠项 -->
+                    <div class="collapsible-item">
+                        <div class="collapsible-header">
+                            <h3>公司介绍</h3>
+                            <svg class="collapse-icon" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="service-box">
+                                <div class="service-card">
+                                    <a href="/about" style="color: #e2e8f0; text-decoration: none;">
+                                        <h4>关于我们</h4>
+                                    </a>
+                                    <p>了解佐罗斯的发展历程和企业文化</p>
+                                </div>
+                                <div class="service-card">
+                                    <a href="/team" style="color: #e2e8f0; text-decoration: none;">
+                                        <h4>团队介绍</h4>
+                                    </a>
+                                    <p>认识我们的核心团队成员</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 更多折叠项... -->
+                </div>
+            </section>
+            <!-- 页脚内容... -->
+        </footer>
+    </div>
+
+    <!-- AI对话界面 -->
+    <section class="ai-section" id="ai-section">
+        <button class="back-button" onclick="showMainSection()" title="返回首页">←</button>
+        <div class="ai-container">
+            <div class="chat-header">
+                <div class="logo" style="
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                    color: white;
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 12px rgba(99,102,241,0.25);
+                ">
+                    AI
+                </div>
+                <div>
+                    <h2 style="color: var(--text-primary); margin-bottom: 4px;">智能助理</h2>
+                    <p style="color: #64748b; font-size: 0.9rem;">在线 · 随时响应</p>
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div class="messages" id="messages">
+                    <div class="message bot-message">
+                        <div style="display: flex; gap: 12px; align-items: start;">
+                            <div style="
+                                width: 32px;
+                                height: 32px;
+                                background: #e0e7ff;
+                                border-radius: 8px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                            ">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366f1">
+                                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-weight: 500; margin-bottom: 8px;">系统消息</div>
+                                <div>您好！我是佐罗斯智能助理，有什么可以帮您？</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="userInput" class="ai-input" placeholder="输入消息...">
+                    <div class="loading" id="aiLoading">AI正在思考中...</div>
+                    <button class="cta-button" onclick="sendMessage()" style="padding: 12px 24px;">发送</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 侧边栏功能
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        }
+
+        // 导航菜单功能
+        let menuOpen = false;
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            menuOpen = !menuOpen;
+        }
+
+        // 页面切换
+        function showAISection() {
+            document.querySelector('.main-section').style.display = 'none';
+            document.getElementById('ai-section').style.display = 'block';
+            document.querySelector('nav').style.display = 'none';
+            document.getElementById('userInput').focus();
+        }
+
+        function showMainSection() {
+            document.querySelector('.main-section').style.display = 'block';
+            document.getElementById('ai-section').style.display = 'none';
+            document.querySelector('nav').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        // 轮播图逻辑
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel img');
+        let carouselInterval;
+
+        function startCarousel() {
+            carouselInterval = setInterval(nextSlide, 5000);
+        }
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        if(slides.length > 0) {
+            slides[0].classList.add('active');
+            startCarousel();
+        }
+
+        // 图片滑动功能
+        const sliderTrack = document.getElementById('sliderTrack');
+        const sliderDots = document.getElementById('sliderDots');
+        const slides2 = document.querySelectorAll('.slide');
+
+        slides2.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'slider-dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => slideTo(index));
+            sliderDots.appendChild(dot);
+        });
+
+        function slideTo(index) {
+            sliderTrack.scrollTo({
+                left: sliderTrack.clientWidth * index,
+                behavior: 'smooth'
+            });
+            updateDots(index);
+        }
+
+        function updateDots(activeIndex) {
+            document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === activeIndex);
+            });
+        }
+
+        // 折叠面板功能
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const content = header.nextElementSibling;
+                item.classList.toggle('active');
+                content.style.height = item.classList.contains('active') ? content.scrollHeight + "px" : 0;
+            });
+        });
+
+        // AI聊天功能
+        let isAITyping = false;
+        async function sendMessage() {
+            if (isAITyping) return;
+            
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addAIMessage(message, true);
+            input.value = '';
+            
+            // 特殊关键词处理
+            if (message.toLowerCase().includes('佐罗斯')) {
+                addAIMessage('您好！这里是佐罗斯智能平台，请问有什么可以帮助您？', false);
+                return;
+            }
+
+            // 显示加载状态
+            const loading = document.getElementById('aiLoading');
+            loading.style.display = 'block';
+            isAITyping = true;
+
+            try {
+                // 使用CORS代理
+                const proxyList = [
+                    'https://api.allorigins.win/raw?url=',
+                    'https://corsproxy.io/?',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ];
+                const proxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+                const apiUrl = encodeURIComponent(
+                    `http://api.qingyunke.com/api.php?key=free&appid=0&msg=${message}`
+                );
+
+                const response = await fetch(proxy + apiUrl);
+                if (!response.ok) throw new Error('API请求失败');
+                
+                const data = await response.json();
+                if (data.result !== 0) throw new Error('API返回错误');
+
+                // 处理回复内容
+                const reply = data.content
+                    .replace(/{br}/g, '\n')
+                    .replace(/菲菲/g, '佐罗斯')
+                    .replace(/北京彩讯科技/g, '佐罗斯团队');
+                
+                addAIMessage(reply, false);
+            } catch (error) {
+                addAIMessage(`服务暂时不可用，请稍后再试 (错误代码: ${error.message})`, false);
+            } finally {
+                loading.style.display = 'none';
+                isAITyping = false;
+            }
+        }
+
+        function addAIMessage(content, isUser) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            if (isUser) {
+                messageDiv.textContent = content;
+            } else {
+                messageDiv.innerHTML = `
+                    <div style="display: flex; gap: 12px; align-items: start;">
+                        <div style="
+                            width: 32px;
+                            height: 32px;
+                            background: #e0e7ff;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                        ">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366f1">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div style="font-weight: 500; margin-bottom: 8px;">智能助理</div>
+                            <div>${content.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 回车发送
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 初始化导航高度
+        function updateNavHeight() {
+            const nav = document.querySelector('nav');
+            document.documentElement.style.setProperty('--nav-height', `${nav.offsetHeight}px`);
+        }
+        window.addEventListener('load', updateNavHeight);
+        window.addEventListener('resize', updateNavHeight);
+    </script>
 </body>
 </html>
