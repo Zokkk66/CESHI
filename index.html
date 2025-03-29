@@ -962,14 +962,14 @@
             </div>
             <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
-        <div class="sidebar-content">
-            <a href="#home" onclick="handleNavClick(event)">首页</a>
-            <a href="#products" onclick="handleNavClick(event)">产品中心</a>
-            <a href="#about" onclick="handleNavClick(event)">关于我们</a>
-            <a href="#contact" onclick="handleNavClick(event)">联系我们</a>
-            <a href="/documentation">开发文档</a>
-            <a href="/download">下载中心</a>
-        </div>
+<div class="sidebar-content">
+    <a href="#home" onclick="handleNavClick(event)">首页</a>
+    <a href="#products" onclick="handleNavClick(event)">产品中心</a>
+    <a href="#about" onclick="handleNavClick(event)">关于我们</a>
+    <a href="#contact" onclick="handleNavClick(event)">联系我们</a>
+    <a href="https://obtainable-solstice-wannanosaurus.glitch.me" target="_blank">开发文档</a>
+    <a href="https://zokkk66.github.io/CESHI/" target="_blank">下载中心★AI</a>
+</div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
@@ -1123,7 +1123,7 @@
                                     <li>边缘计算模块</li>
                                     <li>预测性维护系统</li>
                                 </ul>
-                                <button class="detail-button" onclick="window.location.href='content://media/external/downloads/229258'">查看案例</button>
+                                <button class="detail-button" onclick="window.location.href='https://zorrose1.neocities.org/not_found'">查看案例</button>
                             </div>
                         </div>
                     </div>
@@ -1499,7 +1499,7 @@
             });
         });
 
-// 完整AI聊天功能代码（无间隔重试版）
+// 完整AI聊天功能代码（带间隔重试版）
 let isAITyping = false;
 async function sendMessage() {
     if (isAITyping) return;
@@ -1518,15 +1518,15 @@ async function sendMessage() {
     loading.style.display = 'block';
     isAITyping = true;
 
-    // 设置精确匹配关键词
+    // 快速响应关键词
     const quickResponses = {
         '你好': '您好！有什么可以帮您？',
-        '你好呀': '您好呀～欢迎咨询佐罗斯智能服务',
+        '你好呀': '您好呀～欢迎咨询佐罗斯智能服务', 
         '佐罗斯': '这里是佐罗斯官方智能助手，请提出您的需求',
         '你是谁': '我不叫佐罗斯，我也不是你爹，我好像还没有名字呢！！这问题我不会'
     };
 
-    // 关键词检查
+    // 关键词匹配
     const trimmedMessage = message.replace(/\s+/g, '');
     if (quickResponses[trimmedMessage]) {
         setTimeout(() => {
@@ -1540,14 +1540,13 @@ async function sendMessage() {
     // 重试配置
     let retryCount = 0;
     const maxRetries = 3;
-    let success = false;
     let finalReply = '';
     const proxyList = [
         'https://api.allorigins.win/raw?url=',
         'https://api.codetabs.com/v1/proxy?quest='
     ];
 
-    while (!success && retryCount <= maxRetries) {
+    while (retryCount <= maxRetries) {
         try {
             const proxy = proxyList[Math.floor(Math.random() * proxyList.length)];
             const apiUrl = encodeURIComponent(
@@ -1560,19 +1559,24 @@ async function sendMessage() {
             const data = await response.json();
             if (data.result !== 0) throw new Error('API响应异常');
 
+            // 处理回复内容
             finalReply = data.content
                 .replace(/{br}/g, '\n')
                 .replace(/菲菲/g, '佐罗斯')
                 .replace(/北京彩讯科技/g, '佐罗斯团队');
             
-            success = true;
+            break; // 成功时退出循环
         } catch (error) {
             retryCount++;
             if (retryCount <= maxRetries) {
+                // 显示重试提示并等待
                 loading.textContent = `再次思考中...（第${retryCount}次重试）`;
-                // 立即重试不等待
+                await new Promise(resolve => 
+                    setTimeout(resolve, 1000 * retryCount) // 递增等待时间
+                );
             } else {
                 finalReply = `服务暂时不可用，请稍后再试 (错误代码: ${error.message})`;
+                break;
             }
         }
     }
@@ -1582,6 +1586,52 @@ async function sendMessage() {
     loading.style.display = 'none';
     isAITyping = false;
 }
+
+// 消息显示函数
+function addAIMessage(content, isUser) {
+    const messagesContainer = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+    
+    if (isUser) {
+        messageDiv.textContent = content;
+    } else {
+        messageDiv.innerHTML = `
+            <div style="display: flex; gap: 12px; align-items: start;">
+                <div style="
+                    width: 32px;
+                    height: 32px;
+                    background: #e0e7ff;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                ">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366f1">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div style="font-weight: 500; margin-bottom: 8px;">智能助理</div>
+                    <div>${content.replace(/\n/g, '<br>')}</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// 回车发送功能
+document.getElementById('userInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
 
 // 消息显示函数
 function addAIMessage(content, isUser) {
